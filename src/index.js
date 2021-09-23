@@ -1,6 +1,6 @@
-import React, { Component } from 'react';
-import PropTypes from 'prop-types';
-import getCaretCoordinates from 'textarea-caret';
+import React, { Component } from "react";
+import PropTypes from "prop-types";
+import getCaretCoordinates from "textarea-caret";
 
 function getHookObject(type, element, startPoint) {
   const caret = getCaretCoordinates(element, element.selectionEnd);
@@ -44,56 +44,52 @@ class InputTrigger extends Component {
   }
 
   handleTrigger(event) {
-    const {
-      trigger,
-      onStart,
-      onCancel,
-      onType,
-    } = this.props;
+    const { trigger, onStart, onCancel, onType } = this.props;
 
-    const {
-      which,
-      shiftKey,
-      metaKey,
-      ctrlKey,
-    } = event;
+    const { which, key, shiftKey, metaKey, ctrlKey } = event;
 
     const { selectionStart } = event.target;
     const { triggered, triggerStartPosition } = this.state;
 
     if (!triggered) {
       if (
-        which === trigger.keyCode &&
+        key === trigger.key &&
         shiftKey === !!trigger.shiftKey &&
         ctrlKey === !!trigger.ctrlKey &&
         metaKey === !!trigger.metaKey
       ) {
-        this.setState({
-          triggered: true,
-          triggerStartPosition: selectionStart + 1,
-        }, () => {
-          setTimeout(() => {
-            onStart(getHookObject('start', this.element));
-          }, 0);
-        });
+        this.setState(
+          {
+            triggered: true,
+            triggerStartPosition: selectionStart + 1,
+          },
+          () => {
+            setTimeout(() => {
+              onStart(getHookObject("start", this.element));
+            }, 0);
+          }
+        );
         return null;
       }
     } else {
       if (which === 8 && selectionStart <= triggerStartPosition) {
-        this.setState({
-          triggered: false,
-          triggerStartPosition: null,
-        }, () => {
-          setTimeout(() => {
-            onCancel(getHookObject('cancel', this.element));
-          }, 0);
-        });
+        this.setState(
+          {
+            triggered: false,
+            triggerStartPosition: null,
+          },
+          () => {
+            setTimeout(() => {
+              onCancel(getHookObject("cancel", this.element));
+            }, 0);
+          }
+        );
 
         return null;
       }
 
       setTimeout(() => {
-        onType(getHookObject('typing', this.element, triggerStartPosition));
+        onType(getHookObject("typing", this.element, triggerStartPosition));
       }, 0);
     }
 
@@ -126,24 +122,18 @@ class InputTrigger extends Component {
         onKeyDown={this.handleTrigger}
         {...rest}
       >
-        {
-          !elementRef
-            ? (
-              React.Children.map(this.props.children, child => (
-                React.cloneElement(child, {
-                  ref: (element) => {
-                    this.element = element;
-                    if (typeof child.ref === 'function') {
-                      child.ref(element);
-                    }
-                  },
-                })
-              ))
+        {!elementRef
+          ? React.Children.map(this.props.children, (child) =>
+              React.cloneElement(child, {
+                ref: (element) => {
+                  this.element = element;
+                  if (typeof child.ref === "function") {
+                    child.ref(element);
+                  }
+                },
+              })
             )
-            : (
-              children
-            )
-        }
+          : children}
       </div>
     );
   }
